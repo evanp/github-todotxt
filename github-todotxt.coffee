@@ -1,3 +1,6 @@
+`#!/usr/bin/env node
+`
+
 # github-todotxt.coffee
 # Get data from Github issues and format it for todo.txt
 #

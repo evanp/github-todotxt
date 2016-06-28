@@ -20,6 +20,4 @@ cmd = (str, callback) ->
       process.exit(code)
 
 task 'build', 'Build lib/ from src/', ->
-  cmd 'coffee -c github-todotxt.coffee'
-  
-
+  cmd 'coffee --compile --bare --no-header github-todotxt.coffee'
