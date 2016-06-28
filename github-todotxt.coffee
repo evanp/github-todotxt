@@ -26,13 +26,17 @@ split = require 'split'
 
 argv = yargs
   .usage('Usage: $0 -t [token]')
-  .env('GITHUB_TODOTXT')
   .demand('t')
   .alias('t', 'token')
   .describe('t', 'OAuth token')
   .alias('f', 'file')
   .describe('f', 'todo.txt file')
   .default('f', path.join(process.env.HOME, "Dropbox", "todo", "todo.txt"))
+  .env('GITHUB_TODOTXT')
+  .alias('c', 'config')
+  .describe('c', 'Config file')
+  .default('c', path.join(process.env.HOME, ".github-todotxt.json"))
+  .config('config')
   .help('h')
   .alias('h', 'help')
   .argv
