@@ -1,3 +1,4 @@
 *.coffee
 Cakefile
 .gitignore
+*~
