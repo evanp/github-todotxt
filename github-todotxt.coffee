@@ -35,6 +35,8 @@ argv = yargs
   .alias('f', 'file')
   .describe('f', 'todo.txt file')
   .default('f', path.join(process.env.HOME, "Dropbox", "todo", "todo.txt"))
+  .alias('q', 'quiet')
+  .describe('q', 'Minimize console output')
   .env('GITHUB_TODOTXT')
   .alias('c', 'config')
   .describe('c', 'Config file')
@@ -49,6 +51,11 @@ projectCase = (str) ->
 
 token = argv.t
 filename = argv.f
+quiet = argv.q?
+
+note = (str) ->
+  if not quiet
+    process.stdout.write str
 
 github = new GitHubApi
   debug: false
@@ -76,6 +83,7 @@ async.parallel [
         callback null, todos
   (callback) ->
     getIssues = (page, acc, callback) ->
+      note "."
       props =
         state: "all"
         filter: "assigned"
@@ -89,14 +97,19 @@ async.parallel [
           if issues.length >= 100
             getIssues page + 1, acc, callback
           else
+            note "\n"
             callback null, acc
+    if not quiet
+      note "Getting issues..."
     getIssues 1, [], callback
 ], (err, results) ->
   if err
     console.error err
   else
     [todos, issues] = results
-    console.dir {todos: todos.length, issues: issues.length}
+    if not quiet
+      note "#{todos.length} lines in #{filename}\n"
+      note "#{issues.length} issues on Github\n"
     for issue in issues
       repo = issue.repository.full_name
       number = issue.number
@@ -109,8 +122,10 @@ async.parallel [
             # XXX: close the github issue
         else
           if issue.state is "closed"
+            note "Marking line for issue #{id} complete.\n"
             todo.text = "x #{todo.text}"
       else if issue.state is "open"
+        note "Adding line for issue #{id}.\n"
         ts = issue.created_at.substr(0, 10)
         project = projectCase repo.split("/")[1]
         title = issue.title
