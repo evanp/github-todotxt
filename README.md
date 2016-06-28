@@ -30,22 +30,18 @@ The easiest way to install is to use [npm](http://npmjs.org/):
 npm install -g github-todotxt
 ```
 
-You can also fork the repository.
-
-Authentication
---------------
-
-You need an [OAuth](https://developer.github.com/v3/oauth/) token from Github to
-run github-todotxt.
+You can also fork the repository, or really just download the .coffee file
+and run it directly with [CoffeeScript](http://coffeescript.org/).
 
 Usage
 -----
 
 The script takes the following arguments:
 
-* ***-t*** (***--token***): The OAuth token for your account. You can get one at
-  going to https://github.com/settings/tokens . Note that Github only shows the
-  token once, so copy-and-paste it!
+* ***-t*** (***--token***): You need an
+  [OAuth](https://developer.github.com/v3/oauth/) token from Github to
+  run github-todotxt. You can get one at https://github.com/settings/tokens .
+  Note that Github only shows the token once, so copy-and-paste it!
 * ***-f*** (***--file***): Path to your todo.txt file. The default is
   `$HOME/Dropbox/todo/todo.txt`, where `$HOME` is your home directory. Note that
   this file will be written to! We'll make a backup, though.
@@ -68,7 +64,7 @@ For example:
 ```json
 {
   "token": "abcdefghijklmnopqrstuvwxyz01234567890",
-  "file": "/home/evan/github/todo.txt"
+  "file": "/home/evan/testing/todo.txt"
 }
 ```
 
@@ -89,8 +85,11 @@ of like this:
 (B) 2016-06-27 Use a configuration file issue:evanp/github-todotxt#5 +GithubTodotxt
 ```
 
-It will automatically close todo.txt items for issues that have been closed on
-Github.
+It uses the same format as when referring to remote issues in Github comments:
+`username/repository#number`. You can't abbreviate that in any way.
+
+It will automatically close todo.txt items (prepend an `x`) for issues that have
+been closed on Github.
 
 It will automatically add todo.txt items for issues that exist on Github that
 don't exist in todo.txt.
@@ -99,3 +98,10 @@ It looks at all Github issues in all repositories you have access to. It only
 syncs with issues that are assigned to you.
 
 It creates automatic project markers, based on the repository name.
+
+Backup
+------
+
+`github-todotxt` does a single backup file, right next to the main file, with a
+`.bak` appended to the name. Hopefully that doesn't clobber your existing .bak
+file. If you see a problem in how github-todotxt works, check for the .bak file.
