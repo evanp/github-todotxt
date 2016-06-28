@@ -49,7 +49,7 @@ The script takes the following arguments:
   maybe you want it really, really quiet.
 * ***-c*** (***--config***): Path to the config file (see config file section
   below). If you don't provide this argument, the default is
-  `$HOME/github-todotxt.json`.
+  `$HOME/.github-todotxt.json`.
 * ***-h*** (***--help***): Show pretty much this help output.
 
 Config file
