@@ -1,11 +1,17 @@
 {
   "name": "github-todotxt",
   "description": "Grab github issues and export them as todo.txt lines",
+  "repository": "https://github.com/evanp/github-todotxt.git",
+  "license": "Apache-2.0",
   "dependencies": {
-    "lodash": "^4.13.1",
     "async": "^1.5.2",
     "github": "^1.1.2",
-    "yargs": "^4.7.1",
-    "split": "^1.0.0"
+    "lodash": "^4.13.1",
+    "split": "^1.0.0",
+    "yargs": "^4.7.1"
+  },
+  "devDependencies": {
+    "glob": "^7.0.5",
+    "coffee-script": "^1.10.0"
   }
 }
