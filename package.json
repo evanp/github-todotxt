@@ -1,8 +1,10 @@
 {
   "name": "github-todotxt",
+  "version": "0.1.0",
   "description": "Grab github issues and export them as todo.txt lines",
   "repository": "https://github.com/evanp/github-todotxt.git",
   "license": "Apache-2.0",
+  "bin": "./github-todotxt.js",
   "dependencies": {
     "async": "^1.5.2",
     "github": "^1.1.2",
