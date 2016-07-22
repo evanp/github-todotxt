@@ -130,6 +130,23 @@ async.parallel [
         if issue.milestone?
           line += " +#{projectCase(issue.milestone.title)}"
         todos.push {text: line}
+
+    # Todos with issues that aren't in the list should be marked as done.
+
+    for todo in todos
+      if !todo.issue?
+        continue
+      if todo.text.match /^x/
+        continue
+      issue = _.find issues, (issue) ->
+        repo = issue.repository.full_name
+        number = issue.number
+        id = "#{repo}##{number}"
+        id == todo.issue
+      if !issue?
+        note "Issue #{todo.issue} not assigned to you; marking it done.\n"
+        todo.text = "x #{todo.text}"
+
     backup = "#{filename}.bak"
     async.waterfall [
       (callback) ->
