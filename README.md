@@ -94,6 +94,9 @@ been closed on Github.
 It will automatically add todo.txt items for issues that exist on Github that
 don't exist in todo.txt.
 
+It will automatically close todo.txt items (prepend an `x`) for issues that are
+not assigned to you on Github (probably because you re-assigned them).
+
 It looks at all Github issues in all repositories you have access to. It only
 syncs with issues that are assigned to you.
 
