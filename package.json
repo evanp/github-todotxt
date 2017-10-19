@@ -5,18 +5,11 @@
   "repository": "https://github.com/evanp/github-todotxt.git",
   "license": "Apache-2.0",
   "bin": "./github-todotxt.js",
-  "scripts": {
-    "prepublish": "cake build"
-  },
   "dependencies": {
     "async": "^1.5.2",
     "github": "^1.1.2",
     "lodash": "^4.13.1",
     "split": "^1.0.0",
     "yargs": "^4.7.1"
-  },
-  "devDependencies": {
-    "glob": "^7.0.5",
-    "coffee-script": "^1.10.0"
   }
 }
