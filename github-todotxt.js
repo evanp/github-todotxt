@@ -63,6 +63,15 @@ github.authenticate({
   token
 })
 
+function markComplete (text, completed) {
+  const m = text.match(/^\s*\(([A-Z])\)\s*/)
+  if (m) {
+    return `x ${completed} ${text.substr(m[0].length)} pri:${m[1]}`
+  } else {
+    return `x ${completed} ${text}`
+  }
+}
+
 async.parallel([
   function (callback) {
     const todos = []
@@ -132,7 +141,11 @@ async.parallel([
         } else {
           if (issue.state === 'closed') {
             note(`Marking line for issue ${id} complete.\n`)
-            todo.text = `x ${todo.text}`
+            const completed = (issue.closed_at)
+              ? issue.closed_at.substr(0, 10)
+              : (new Date()).toISOString().substr(0, 10)
+            const {text} = todo
+            todo.text = markComplete(text, completed)
           }
         }
       } else if (issue.state === 'open') {
@@ -165,7 +178,8 @@ async.parallel([
       })
       if ((issue == null)) {
         note(`Issue ${todo.issue} not assigned to you; marking it done.\n`)
-        todo.text = `x ${todo.text}`
+        const completed = (new Date()).toISOString().substr(0, 10)
+        todo.text = markComplete(todo.text, completed)
       }
     }
 
