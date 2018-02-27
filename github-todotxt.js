@@ -1,15 +1,8 @@
 #!/usr/bin/env node
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-// github-todotxt.coffee
+// github-todotxt.js
 // Get data from Github issues and format it for todo.txt
 //
-// Copyright 2016 Evan Prodromou <evan@prodromou.name>
+// Copyright 2016-2018 Evan Prodromou <evan@prodromou.name>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -81,14 +74,14 @@ async.parallel([
           const todo =
             {text: line}
           if (m) {
-            todo.issue = m[1]
+            [, todo.issue] = m
           }
           return todos.push(todo)
         }
       }).on('error', err => callback(err, null)).on('end', () => callback(null, todos))
   },
   function (callback) {
-    var getIssues = function (page, acc, callback) {
+    const getIssues = function (page, acc, callback) {
       note('.')
       const props = {
         state: 'all',
@@ -96,7 +89,7 @@ async.parallel([
         per_page: 100,
         page
       }
-      return github.issues.getAll(props, (err, issues) => {
+      github.issues.getAll(props, (err, issues) => {
         if (err) {
           return callback(err)
         } else {
@@ -125,7 +118,7 @@ async.parallel([
       note(`${todos.length} lines in ${filename}\n`)
       note(`${issues.length} issues on Github\n`)
     }
-    for (var issue of Array.from(issues)) {
+    for (const issue of Array.from(issues)) {
       repo = issue.repository.full_name;
       ({ number } = issue)
       id = `${repo}#${number}`
@@ -133,7 +126,7 @@ async.parallel([
       if (todo != null) {
         if (todo.text.match(/^x/)) {
           if (issue.state === 'open') {
-            'not closing issue'
+            note('not closing issue')
           }
           // XXX: close the github issue
         } else {
@@ -164,7 +157,7 @@ async.parallel([
       if (todo.text.match(/^x/)) {
         continue
       }
-      issue = _.find(issues, (issue) => {
+      const issue = _.find(issues, (issue) => {
         repo = issue.repository.full_name;
         ({ number } = issue)
         id = `${repo}#${number}`
