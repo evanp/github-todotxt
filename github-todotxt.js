@@ -23,14 +23,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
-const _ = require('lodash');
-const yargs = require('yargs');
-const GitHubApi = require('github');
-const async = require('async');
-const split = require('split');
+const _ = require('lodash')
+const yargs = require('yargs')
+const GitHubApi = require('github')
+const async = require('async')
+const split = require('split')
 
 const { argv } = yargs
   .usage('Usage: $0 -t [token]')
@@ -39,120 +39,119 @@ const { argv } = yargs
   .describe('t', 'OAuth token')
   .alias('f', 'file')
   .describe('f', 'todo.txt file')
-  .default('f', path.join(process.env.HOME, "Dropbox", "todo", "todo.txt"))
+  .default('f', path.join(process.env.HOME, 'Dropbox', 'todo', 'todo.txt'))
   .alias('q', 'quiet')
   .describe('q', 'Minimize console output')
   .env('GITHUB_TODOTXT')
   .alias('c', 'config')
   .describe('c', 'Config file')
-  .default('c', path.join(process.env.HOME, ".github-todotxt.json"))
+  .default('c', path.join(process.env.HOME, '.github-todotxt.json'))
   .config('config')
   .help('h')
   .alias('h', 'help')
-  ;
 
-const projectCase = str => _.upperFirst(_.camelCase(str));
+const projectCase = str => _.upperFirst(_.camelCase(str))
 
-const token = argv.t;
-const filename = argv.f;
-const quiet = (argv.q != null);
+const token = argv.t
+const filename = argv.f
+const quiet = (argv.q != null)
 
-const note = function(str) {
+const note = function (str) {
   if (!quiet) {
-    return process.stdout.write(str);
+    return process.stdout.write(str)
   }
-};
+}
 
 const github = new GitHubApi({
-  debug: false});
+  debug: false})
 
 github.authenticate({
-  type: "oauth",
+  type: 'oauth',
   token
-});
+})
 
 async.parallel([
-  function(callback) {
-    const todos = [];
+  function (callback) {
+    const todos = []
     return fs.createReadStream(filename)
       .pipe(split())
-      .on('data', function(line) {
+      .on('data', (line) => {
         if (line.match(/\S/)) {
-          const m = line.match(/issue:(\S+)/);
+          const m = line.match(/issue:(\S+)/)
           const todo =
-            {text: line};
+            {text: line}
           if (m) {
-            todo.issue = m[1];
+            todo.issue = m[1]
           }
-          return todos.push(todo);
+          return todos.push(todo)
         }
-    }).on('error', err => callback(err, null)).on('end', () => callback(null, todos));
+      }).on('error', err => callback(err, null)).on('end', () => callback(null, todos))
   },
-  function(callback) {
-    var getIssues = function(page, acc, callback) {
-      note(".");
+  function (callback) {
+    var getIssues = function (page, acc, callback) {
+      note('.')
       const props = {
-        state: "all",
-        filter: "assigned",
+        state: 'all',
+        filter: 'assigned',
         per_page: 100,
         page
-      };
-      return github.issues.getAll(props, function(err, issues) {
+      }
+      return github.issues.getAll(props, (err, issues) => {
         if (err) {
-          return callback(err);
+          return callback(err)
         } else {
-          acc = _.concat(acc, issues);
+          acc = _.concat(acc, issues)
           if (issues.length >= 100) {
-            return getIssues(page + 1, acc, callback);
+            return getIssues(page + 1, acc, callback)
           } else {
-            note("\n");
-            return callback(null, acc);
+            note('\n')
+            return callback(null, acc)
           }
         }
-      });
-    };
-    if (!quiet) {
-      note("Getting issues...");
+      })
     }
-    return getIssues(1, [], callback);
-  }
-], function(err, results) {
-  if (err) {
-    return console.error(err);
-  } else {
-    let id, number, repo, todo;
-    const [todos, issues] = Array.from(results);
     if (!quiet) {
-      note(`${todos.length} lines in ${filename}\n`);
-      note(`${issues.length} issues on Github\n`);
+      note('Getting issues...')
+    }
+    return getIssues(1, [], callback)
+  }
+], (err, results) => {
+  if (err) {
+    return console.error(err)
+  } else {
+    let id, number, repo, todo
+    const [todos, issues] = Array.from(results)
+    if (!quiet) {
+      note(`${todos.length} lines in ${filename}\n`)
+      note(`${issues.length} issues on Github\n`)
     }
     for (var issue of Array.from(issues)) {
       repo = issue.repository.full_name;
-      ({ number } = issue);
-      id = `${repo}#${number}`;
-      todo = _.find(todos, {issue: id});
+      ({ number } = issue)
+      id = `${repo}#${number}`
+      todo = _.find(todos, {issue: id})
       if (todo != null) {
         if (todo.text.match(/^x/)) {
-          if (issue.state === "open") {
-            "not closing issue";
+          if (issue.state === 'open') {
+            'not closing issue'
           }
-            // XXX: close the github issue
+          // XXX: close the github issue
         } else {
-          if (issue.state === "closed") {
-            note(`Marking line for issue ${id} complete.\n`);
-            todo.text = `x ${todo.text}`;
+          if (issue.state === 'closed') {
+            note(`Marking line for issue ${id} complete.\n`)
+            todo.text = `x ${todo.text}`
           }
         }
-      } else if (issue.state === "open") {
-        note(`Adding line for issue ${id}.\n`);
-        const ts = issue.created_at.substr(0, 10);
-        const project = projectCase(repo.split("/")[1]);
-        const { title } = issue;
-        let line = `${ts} ${title} issue:${repo}#${number} +${project}`;
+      } else if (issue.state === 'open') {
+        note(`Adding line for issue ${id}.\n`)
+        const ts = issue.created_at.substr(0, 10)
+        const project = projectCase(repo.split('/')[1])
+        const { title } = issue
+        let line = `${ts} ${title} issue:${repo}#${number} +${project}`
         if (issue.milestone != null) {
-          line += ` +${projectCase(issue.milestone.title)}`;
+          line += ` +${projectCase(issue.milestone.title)}`
         }
-        todos.push({text: line});
+        todos.push({text: line})
       }
     }
 
@@ -160,35 +159,35 @@ async.parallel([
 
     for (todo of Array.from(todos)) {
       if ((todo.issue == null)) {
-        continue;
+        continue
       }
       if (todo.text.match(/^x/)) {
-        continue;
+        continue
       }
-      issue = _.find(issues, function(issue) {
+      issue = _.find(issues, (issue) => {
         repo = issue.repository.full_name;
-        ({ number } = issue);
-        id = `${repo}#${number}`;
-        return id === todo.issue;
-      });
+        ({ number } = issue)
+        id = `${repo}#${number}`
+        return id === todo.issue
+      })
       if ((issue == null)) {
-        note(`Issue ${todo.issue} not assigned to you; marking it done.\n`);
-        todo.text = `x ${todo.text}`;
+        note(`Issue ${todo.issue} not assigned to you; marking it done.\n`)
+        todo.text = `x ${todo.text}`
       }
     }
 
-    const backup = `${filename}.bak`;
+    const backup = `${filename}.bak`
     return async.waterfall([
       callback => fs.rename(filename, backup, callback),
-      function(callback) {
-        const texts = _.map(todos, "text");
-        const data = texts.join("\n") + "\n";
-        return fs.writeFile(filename, data, callback);
+      function (callback) {
+        const texts = _.map(todos, 'text')
+        const data = `${texts.join('\n')}\n`
+        return fs.writeFile(filename, data, callback)
       }
-    ], function(err) {
+    ], (err) => {
       if (err) {
-        return console.error(err);
+        return console.error(err)
       }
-    });
+    })
   }
-});
+})
