@@ -43,7 +43,7 @@ const { argv } = yargs
   .alias('h', 'help')
 
 const projectCase = str => _.upperFirst(_.camelCase(str))
-const markComplete = function(text, completed) {
+const markComplete = function (text, completed) {
   const m = text.match(/^\s*\(([A-Z])\)\s*/)
   if (m) {
     return `x ${completed} ${text.substr(m[0].length)} pri:${m[1]}`
@@ -52,7 +52,7 @@ const markComplete = function(text, completed) {
   }
 }
 
-const getTodos = async function(filename) {
+const getTodos = async function (filename) {
   return new Promise((resolve, reject) => {
     const todos = []
     fs.createReadStream(filename)
@@ -75,7 +75,7 @@ const getTodos = async function(filename) {
   })
 }
 
-const writeTodos = async function(filename, todos) {
+const writeTodos = async function (filename, todos) {
   return new Promise((resolve, reject) => {
     const ws = fs.createWriteStream(filename)
       .on('error', reject)
@@ -89,7 +89,7 @@ const writeTodos = async function(filename, todos) {
   })
 }
 
-const rename = async function(oldname, newname) {
+const rename = async function (oldname, newname) {
   return new Promise((resolve, reject) => {
     fs.rename(oldname, newname, (err) => {
       if (err) {
@@ -101,8 +101,7 @@ const rename = async function(oldname, newname) {
   })
 }
 
-const main = async function(argv) {
-
+const main = async function (argv) {
   const token = argv.t
   const filename = argv.f
   const quiet = (argv.q != null)
@@ -124,6 +123,8 @@ const main = async function(argv) {
     note(`${todos.length} lines in ${filename}\n`)
     note(`${issues.length} issues on Github\n`)
   }
+
+  let repo, id, todo, number
 
   for (const issue of Array.from(issues)) {
     repo = issue.repository.full_name;
