@@ -121,13 +121,13 @@ const main = async function (argv) {
     auth: token
   })
 
+  note(`Getting issues from Github...`)
   const issues = await github.paginate('GET /issues')
-  const todos = await getTodos(filename, key)
+  note(`Done. (${issues.length})\n`)
 
-  if (!quiet) {
-    note(`${todos.length} lines in ${filename}\n`)
-    note(`${issues.length} issues on Github\n`)
-  }
+  note(`Getting todos from ${filename}...`)
+  const todos = await getTodos(filename, key)
+  note(`Done. (${todos.length})\n`)
 
   let repo, id, todo, number
 
@@ -189,11 +189,15 @@ const main = async function (argv) {
 
   const backup = `${filename}.bak`
 
-  note(`Backing up ${filename} to ${backup}...\n`)
+  note(`Backing up ${filename} to ${backup}...`)
 
   await rename(filename, backup)
 
+  note(`Done.\n`)
+
+  note(`Writing todos to ${filename}...`)
   await writeTodos(filename, todos)
+  note(`Done.\n`)
 }
 
 main(argv)
