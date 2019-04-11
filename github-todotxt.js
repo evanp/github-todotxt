@@ -56,8 +56,6 @@ const note = function (str) {
 }
 
 const github = new Octokit({
-  debug: true,
-  log: console,
   auth: token
 })
 
@@ -91,25 +89,13 @@ async.parallel([
     if (!quiet) {
       note('Getting issues...')
     }
-    const getAllIssues = (page, acc, callback) => {
-      const PAGE_LENGTH = 30
-      console.log(`page = ${page}`)
-      github.request(`GET /issues?page=${page}`)
-        .then(results => {
-          console.dir(results.headers)
-          const issues = results.data
-          const all = acc.concat(issues)
-          if (issues.length >= PAGE_LENGTH) {
-            getAllIssues(page + 1, all, callback)
-          } else {
-            callback(null, all)
-          }
-        })
-        .catch(err => {
-          callback(err)
-        })
-    }
-    getAllIssues(1, [], callback)
+    github.paginate('GET /issues')
+      .then(issues => {
+        callback(null, issues)
+      })
+      .catch(err => {
+        callback(err)
+      })
   }
 ], (err, results) => {
   if (err) {
