@@ -34,6 +34,9 @@ const { argv } = yargs
   .default('f', path.join(process.env.HOME, 'Dropbox', 'todo', 'todo.txt'))
   .alias('q', 'quiet')
   .describe('q', 'Minimize console output')
+  .alias('k', 'key')
+  .describe('k', 'Prefix for issues in todo.txt file')
+  .default('k', 'issue')
   .env('GITHUB_TODOTXT')
   .alias('c', 'config')
   .describe('c', 'Config file')
@@ -52,14 +55,15 @@ const markComplete = function (text, completed) {
   }
 }
 
-const getTodos = async function (filename) {
+const getTodos = async function (filename, key) {
   return new Promise((resolve, reject) => {
     const todos = []
+    const ir = new RegExp(`${key}:(\\S+)`)
     fs.createReadStream(filename)
       .pipe(split())
       .on('data', (line) => {
         if (line.match(/\S/)) {
-          const m = line.match(/issue:(\S+)/)
+          const m = line.match(ir)
           const todo =
             {text: line}
           if (m) {
@@ -105,6 +109,7 @@ const main = async function (argv) {
   const token = argv.t
   const filename = argv.f
   const quiet = (argv.q != null)
+  const key = argv.k
 
   const note = function (str) {
     if (!quiet) {
@@ -117,7 +122,7 @@ const main = async function (argv) {
   })
 
   const issues = await github.paginate('GET /issues')
-  const todos = await getTodos(filename)
+  const todos = await getTodos(filename, key)
 
   if (!quiet) {
     note(`${todos.length} lines in ${filename}\n`)
@@ -152,7 +157,7 @@ const main = async function (argv) {
       const ts = issue.created_at.substr(0, 10)
       const project = projectCase(repo.split('/')[1])
       const { title } = issue
-      let line = `${ts} ${title} issue:${repo}#${number} +${project}`
+      let line = `${ts} ${title} ${key}:${repo}#${number} +${project}`
       if (issue.milestone != null) {
         line += ` +${projectCase(issue.milestone.title)}`
       }
