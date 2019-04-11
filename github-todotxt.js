@@ -21,7 +21,7 @@ const path = require('path')
 
 const _ = require('lodash')
 const yargs = require('yargs')
-const GitHubApi = require('github')
+const Octokit = require('@octokit/rest')
 const async = require('async')
 const split = require('split')
 
@@ -55,12 +55,10 @@ const note = function (str) {
   }
 }
 
-const github = new GitHubApi({
-  debug: false})
-
-github.authenticate({
-  type: 'oauth',
-  token
+const github = new Octokit({
+  debug: true,
+  log: console,
+  auth: token
 })
 
 function markComplete (text, completed) {
@@ -90,32 +88,28 @@ async.parallel([
       }).on('error', err => callback(err, null)).on('end', () => callback(null, todos))
   },
   function (callback) {
-    const getIssues = function (page, acc, callback) {
-      note('.')
-      const props = {
-        state: 'all',
-        filter: 'assigned',
-        per_page: 100,
-        page
-      }
-      github.issues.getAll(props, (err, issues) => {
-        if (err) {
-          return callback(err)
-        } else {
-          acc = _.concat(acc, issues)
-          if (issues.length >= 100) {
-            return getIssues(page + 1, acc, callback)
-          } else {
-            note('\n')
-            return callback(null, acc)
-          }
-        }
-      })
-    }
     if (!quiet) {
       note('Getting issues...')
     }
-    return getIssues(1, [], callback)
+    const getAllIssues = (page, acc, callback) => {
+      const PAGE_LENGTH = 30
+      console.log(`page = ${page}`)
+      github.request(`GET /issues?page=${page}`)
+        .then(results => {
+          console.dir(results.headers)
+          const issues = results.data
+          const all = acc.concat(issues)
+          if (issues.length >= PAGE_LENGTH) {
+            getAllIssues(page + 1, all, callback)
+          } else {
+            callback(null, all)
+          }
+        })
+        .catch(err => {
+          callback(err)
+        })
+    }
+    getAllIssues(1, [], callback)
   }
 ], (err, results) => {
   if (err) {
