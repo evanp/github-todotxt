@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fevanp%2Fgithub-todotxt.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fevanp%2Fgithub-todotxt?ref=badge_shield)
+
 github-todotxt
 ==============
 
@@ -108,3 +110,6 @@ Backup
 `github-todotxt` does a single backup file, right next to the main file, with a
 `.bak` appended to the name. Hopefully that doesn't clobber your existing .bak
 file. If you see a problem in how github-todotxt works, check for the .bak file.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fevanp%2Fgithub-todotxt.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fevanp%2Fgithub-todotxt?ref=badge_large)
