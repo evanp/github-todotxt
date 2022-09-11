@@ -39,7 +39,7 @@ Usage
 The script takes the following arguments:
 
 * ***-t*** (***--token***): You need an
-  [OAuth](https://developer.github.com/v3/oauth/) token from Github to
+  [OAuth](https://developer.github.com/v3/oauth/) token from Github (with repo scope) to
   run github-todotxt. You can get one at https://github.com/settings/tokens .
   Note that Github only shows the token once, so copy-and-paste it!
 * ***-f*** (***--file***): Path to your todo.txt file. The default is
